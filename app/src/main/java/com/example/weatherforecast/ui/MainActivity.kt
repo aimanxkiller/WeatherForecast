@@ -7,6 +7,7 @@ import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.example.weatherforecast.R
@@ -64,6 +65,7 @@ class MainActivity : AppCompatActivity() {
 
             } else {
                 // Permission denied, show a message to the user or handle it in some other way
+                Toast.makeText(this,"Permission Denied, App will not work",Toast.LENGTH_SHORT).show()
             }
         }
     }

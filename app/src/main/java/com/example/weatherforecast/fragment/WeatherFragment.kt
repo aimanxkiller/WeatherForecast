@@ -33,9 +33,14 @@ class WeatherFragment : Fragment() {
 
     private lateinit var textV:TextView
 
-    @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        textV = view.findViewById(R.id.testText)
+        textV = view.findViewById(R.id.tvLocation)
+
+        checkLocation()
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun checkLocation(){
 
         locationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
         locationListener = LocationListener { location ->
@@ -45,14 +50,8 @@ class WeatherFragment : Fragment() {
             longitude = String.format("%.3f",location.longitude).toDouble()
 
             textV.text = "Lat:$latitude & Long:$longitude"
-
         }
 
-        checkLocation()
-
-    }
-
-    private fun checkLocation(){
         if (ActivityCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION
