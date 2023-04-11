@@ -89,7 +89,6 @@ class WeatherFragment : Fragment() {
             "auto")
 
 
-
         viewModel.responseBody.observe(viewLifecycleOwner){
             tvCurTemp.text = "${it.currentWeather?.temperature.toString()}\u00B0"
             tvRain.text = "Chance of Rain : ${viewModel.getCurAvg()}"

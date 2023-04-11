@@ -1,14 +1,13 @@
 package com.example.weatherforecast.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.weatherforecast.di.Repository
-import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import androidx.lifecycle.viewModelScope
+import com.example.weatherforecast.di.Repository
 import com.example.weatherforecast.model.ResponseWeather
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 
 @HiltViewModel
@@ -50,4 +49,5 @@ class ViewModelWeather @Inject constructor(
         }
         return String.format("%.3f", (sum/24))
     }
+
 }
