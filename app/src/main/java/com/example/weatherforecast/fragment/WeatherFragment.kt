@@ -35,6 +35,8 @@ class WeatherFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        geocoder = Geocoder(requireContext(), Locale.getDefault())
+
         checkLocation()
 
         // Inflate the layout for this fragment
@@ -45,31 +47,37 @@ class WeatherFragment : Fragment() {
     private lateinit var locationListener: LocationListener
     private val viewModel:ViewModelWeather by activityViewModels()
 
-    private var latitude:Double? = null
-    private var longitude:Double? = null
+    private var latitude:Double? = 3.132
+    private var longitude:Double? = 101.684
 
     private lateinit var tvLocation:TextView
     private lateinit var tvCurTemp:TextView
     private lateinit var tvRain:TextView
-    private lateinit var btnTest:Button
+    private lateinit var btnRefresh:Button
     private lateinit var recycler:RecyclerView
     private lateinit var recyclerViewAdapter:RecyclerViewAdapter
+    private lateinit var geocoder:Geocoder
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         tvLocation = view.findViewById(R.id.tvLocation)
         tvCurTemp = view.findViewById(R.id.tvCurTemp)
         tvRain = view.findViewById(R.id.tvRainProb)
-        btnTest = view.findViewById(R.id.testGet)
+        btnRefresh = view.findViewById(R.id.testGet)
         recycler = view.findViewById(R.id.recyclerMain)
 
-
-        val geocoder = Geocoder(requireContext(), Locale.getDefault())
         recycler.apply {
             layoutManager = LinearLayoutManager(requireContext(),LinearLayoutManager.VERTICAL,false)
             recyclerViewAdapter = RecyclerViewAdapter()
         }
 
-        btnTest.setOnClickListener {
+        //Get initial location
+        val addresses = geocoder.getFromLocation(latitude!!, longitude!!, 1)
+        val address = addresses!!.firstOrNull()
+        tvLocation.text = "${address?.locality}"
+        getWeatherForecast(latitude!!, longitude!!)
+
+        //Get location if changed
+        btnRefresh.setOnClickListener {
             val addresses = geocoder.getFromLocation(latitude!!, longitude!!, 1)
             val address = addresses!!.firstOrNull()
             tvLocation.text = "${address?.locality}"
@@ -110,6 +118,10 @@ class WeatherFragment : Fragment() {
             latitude = String.format("%.3f", location.latitude).toDouble()
             longitude = String.format("%.3f",location.longitude).toDouble()
 
+            val addresses = geocoder.getFromLocation(latitude!!, longitude!!, 1)
+            val address = addresses!!.firstOrNull()
+            tvLocation.text = "${address?.locality}"
+            getWeatherForecast(latitude!!, longitude!!)
         }
 
         if (ActivityCompat.checkSelfPermission(
