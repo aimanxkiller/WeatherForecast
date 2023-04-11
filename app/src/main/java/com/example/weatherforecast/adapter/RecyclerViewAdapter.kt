@@ -9,6 +9,7 @@ import com.example.weatherforecast.R
 import com.example.weatherforecast.model.ResponseWeather
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.math.roundToInt
 
 class RecyclerViewAdapter:RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder>() {
 
@@ -56,7 +57,7 @@ class RecyclerViewAdapter:RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder>
 
         fun bind(datePass: String, avg: Double) {
             date.text = datePass
-            temp.text = "${avg}°"
+            temp.text = "${avg.roundToInt()}°"
         }
 
     }

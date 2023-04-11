@@ -8,6 +8,7 @@ import com.example.weatherforecast.model.ResponseWeather
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.math.roundToInt
 
 
 @HiltViewModel
@@ -47,7 +48,8 @@ class ViewModelWeather @Inject constructor(
         for (i in 0 until 24) {
             sum += x[i]
         }
-        return String.format("%.3f", (sum/24))
+
+        return (sum/24).roundToInt().toString()
     }
 
 }

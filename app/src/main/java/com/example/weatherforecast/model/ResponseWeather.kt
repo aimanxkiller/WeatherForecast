@@ -53,7 +53,7 @@ data class CurrentWeather(
 	val weatherCode: Int? = null,
 
 	@field:SerializedName("temperature")
-	val temperature: Any? = null,
+	val temperature: Double? = null,
 
 	@field:SerializedName("windspeed")
 	val windSpeed: Any? = null,

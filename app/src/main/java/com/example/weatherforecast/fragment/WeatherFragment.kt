@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.weatherforecast.adapter.RecyclerViewAdapter
 import java.util.*
+import kotlin.math.roundToInt
 
 @SuppressLint("SetTextI18n")
 @AndroidEntryPoint
@@ -90,8 +91,8 @@ class WeatherFragment : Fragment() {
 
 
         viewModel.responseBody.observe(viewLifecycleOwner){
-            tvCurTemp.text = "${it.currentWeather?.temperature.toString()}\u00B0"
-            tvRain.text = "Chance of Rain : ${viewModel.getCurAvg()}"
+            tvCurTemp.text = "${it.currentWeather?.temperature?.roundToInt()}\u00B0"
+            tvRain.text = "Chance of Rain : ${viewModel.getCurAvg()}%"
 
             recyclerViewAdapter.setData(it)
             recycler.adapter = recyclerViewAdapter
