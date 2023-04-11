@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.example.weatherforecast.R
+import dagger.hilt.android.AndroidEntryPoint
 
 //Do weather app similar to https://dribbble.com/shots/17288933-Kawaii-Weather-App-Exploration
 //API Link as follows "https://api.open-meteo.com/v1/forecast?latitude=3.14&longitude=101.69&hourly=temperature_2m,precipitation_probability&current_weather=true&forecast_days=7&timezone=auto"
@@ -15,6 +16,7 @@ import com.example.weatherforecast.R
 //MVVM,HILT,ViewModel, Nav Comp with 1 Fragment only
 //Handle error when no lat is entered and show error to user
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private val PERMISSION_REQUEST_CODE = 101

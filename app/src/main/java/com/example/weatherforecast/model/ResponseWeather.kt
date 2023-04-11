@@ -38,7 +38,7 @@ data class ResponseWeather(
 data class Hourly(
 
 	@field:SerializedName("temperature_2m")
-	val temperature2m: List<Any?>? = null,
+	val temperature2m: List<Double?>? = null,
 
 	@field:SerializedName("precipitation_probability")
 	val precipitationProbability: List<Int?>? = null,
