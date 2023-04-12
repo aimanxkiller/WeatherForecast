@@ -6,6 +6,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.Rect
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
@@ -21,9 +22,11 @@ import com.example.weatherforecast.R
 import com.example.weatherforecast.viewmodel.ViewModelWeather
 import dagger.hilt.android.AndroidEntryPoint
 import android.location.Geocoder
+import android.widget.RelativeLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.weatherforecast.adapter.RecyclerViewAdapter
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import java.util.*
 import kotlin.math.roundToInt
 
@@ -53,17 +56,20 @@ class WeatherFragment : Fragment() {
     private lateinit var tvLocation:TextView
     private lateinit var tvCurTemp:TextView
     private lateinit var tvRain:TextView
-    private lateinit var btnRefresh:Button
     private lateinit var recycler:RecyclerView
+    private lateinit var bottomSheetBehavior:BottomSheetBehavior<*>
+    private lateinit var bottomSheet:View
     private lateinit var recyclerViewAdapter:RecyclerViewAdapter
     private lateinit var geocoder:Geocoder
+    private lateinit var parentLayout:RelativeLayout
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         tvLocation = view.findViewById(R.id.tvLocation)
         tvCurTemp = view.findViewById(R.id.tvCurTemp)
         tvRain = view.findViewById(R.id.tvRainProb)
-        btnRefresh = view.findViewById(R.id.testGet)
         recycler = view.findViewById(R.id.recyclerMain)
+        bottomSheet = view.findViewById(R.id.bottom_sheet)
+        parentLayout = view.findViewById(R.id.main_layout)
 
         recycler.apply {
             layoutManager = LinearLayoutManager(requireContext(),LinearLayoutManager.VERTICAL,false)
@@ -76,14 +82,28 @@ class WeatherFragment : Fragment() {
         tvLocation.text = "${address?.locality}"
         getWeatherForecast(latitude!!, longitude!!)
 
-        //Get location if changed
-        btnRefresh.setOnClickListener {
-            val addresses = geocoder.getFromLocation(latitude!!, longitude!!, 1)
-            val address = addresses!!.firstOrNull()
-            tvLocation.text = "${address?.locality}"
-            getWeatherForecast(latitude!!, longitude!!)
-        }
+        bottomSheetSettings()
 
+    }
+
+    private fun bottomSheetSettings(){
+        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
+        parentLayout.setOnClickListener {
+            if(bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED){
+                bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+            }
+        }
+        val recycler2 = bottomSheet.findViewById<RecyclerView>(R.id.recyclerBottomSheet)
+
+        recycler2.apply {
+            layoutManager = LinearLayoutManager(requireContext(),LinearLayoutManager.VERTICAL,false)
+            recyclerViewAdapter = RecyclerViewAdapter()
+        }
+        viewModel.responseBody.observe(viewLifecycleOwner){
+
+            recyclerViewAdapter.setData(it)
+            recycler2.adapter = recyclerViewAdapter
+        }
     }
 
     @SuppressLint("NotifyDataSetChanged")
