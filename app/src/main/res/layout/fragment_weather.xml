@@ -10,7 +10,7 @@
     <RelativeLayout
         android:id="@+id/main_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
         <TextView
             android:id="@+id/tvLocation"
             android:textStyle="bold"
@@ -33,23 +33,15 @@
         <TextView
             android:id="@+id/tvCurTemp"
             android:textSize="60sp"
+            android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="15dp"
             android:layout_below="@id/tvRainProb"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="50\u00B0"/>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerMain"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_below="@+id/tvCurTemp"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="20dp" />
     </RelativeLayout>
 
-    <include layout="@layout/bottom_sheet"/>
 
+    <include layout="@layout/bottom_sheet" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -56,7 +56,6 @@ class WeatherFragment : Fragment() {
     private lateinit var tvLocation:TextView
     private lateinit var tvCurTemp:TextView
     private lateinit var tvRain:TextView
-    private lateinit var recycler:RecyclerView
     private lateinit var bottomSheetBehavior:BottomSheetBehavior<*>
     private lateinit var bottomSheet:View
     private lateinit var recyclerViewAdapter:RecyclerViewAdapter
@@ -67,14 +66,8 @@ class WeatherFragment : Fragment() {
         tvLocation = view.findViewById(R.id.tvLocation)
         tvCurTemp = view.findViewById(R.id.tvCurTemp)
         tvRain = view.findViewById(R.id.tvRainProb)
-        recycler = view.findViewById(R.id.recyclerMain)
         bottomSheet = view.findViewById(R.id.bottom_sheet)
         parentLayout = view.findViewById(R.id.main_layout)
-
-        recycler.apply {
-            layoutManager = LinearLayoutManager(requireContext(),LinearLayoutManager.VERTICAL,false)
-            recyclerViewAdapter = RecyclerViewAdapter()
-        }
 
         //Get initial location
         val addresses = geocoder.getFromLocation(latitude!!, longitude!!, 1)
@@ -100,7 +93,6 @@ class WeatherFragment : Fragment() {
             recyclerViewAdapter = RecyclerViewAdapter()
         }
         viewModel.responseBody.observe(viewLifecycleOwner){
-
             recyclerViewAdapter.setData(it)
             recycler2.adapter = recyclerViewAdapter
         }
@@ -108,24 +100,19 @@ class WeatherFragment : Fragment() {
 
     @SuppressLint("NotifyDataSetChanged")
     private fun getWeatherForecast(latitude: Double, longitude: Double) {
-
         viewModel.getForecast(
             latitude,
             longitude,
             "temperature_2m,precipitation_probability",
             "true",
-            7,
+            10,
             "auto")
-
 
         viewModel.responseBody.observe(viewLifecycleOwner){
             tvCurTemp.text = "${it.currentWeather?.temperature?.roundToInt()}\u00B0"
             tvRain.text = "Chance of Rain : ${viewModel.getCurAvg()}%"
-
             recyclerViewAdapter.setData(it)
-            recycler.adapter = recyclerViewAdapter
         }
-
     }
 
     @SuppressLint("SetTextI18n")
