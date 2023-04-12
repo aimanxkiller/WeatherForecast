@@ -15,6 +15,7 @@
             android:id="@+id/tvLocation"
             android:textStyle="bold"
             android:textSize="25sp"
+            android:textColor="@color/black"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
@@ -23,16 +24,17 @@
         <TextView
             android:id="@+id/tvRainProb"
             android:textSize="18sp"
+            android:textColor="@color/black"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
             android:layout_below="@+id/tvLocation"
             android:layout_centerHorizontal="true"
             android:text="@string/chance_of_rain" />
-
         <TextView
             android:id="@+id/tvCurTemp"
             android:textSize="60sp"
+            android:textColor="@color/black"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="15dp"

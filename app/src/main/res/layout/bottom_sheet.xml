@@ -7,7 +7,7 @@
     android:layout_height="wrap_content"
     android:background="@drawable/bg_bottom_drawer"
     app:behavior_hideable="false"
-    app:behavior_peekHeight="50dp"
+    app:behavior_peekHeight="150dp"
     app:layout_behavior="@string/bottom_sheet_behavior"
     android:layout_marginHorizontal="15dp"
     >
