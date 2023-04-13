@@ -1,6 +1,5 @@
 package com.example.weatherforecast.api
 
-import com.example.weatherforecast.model.ErrorResponse
 import com.example.weatherforecast.model.ErrorResponseAPI
 import com.example.weatherforecast.model.ResponseWeather
 import com.haroldadmin.cnradapter.NetworkResponse
