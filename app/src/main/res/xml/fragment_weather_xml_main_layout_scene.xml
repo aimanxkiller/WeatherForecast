@@ -21,6 +21,69 @@
             motion:layout_constraintStart_toStartOf="parent"
             android:id="@+id/tvLocation"
             motion:layout_constraintVertical_bias="0.35" />
+        <Constraint
+            android:id="@+id/tvCurTemp"
+            motion:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            motion:layout_constraintTop_toBottomOf="@id/tvRainProb"
+            motion:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="15dp"
+            android:scaleX="1.2" />
+        <Constraint
+            android:id="@+id/tvCurTemp"
+            motion:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            motion:layout_constraintTop_toBottomOf="@id/tvRainProb"
+            motion:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="15dp"
+            android:scaleY="1.2" />
+        <Constraint
+            android:id="@+id/tvCurTemp"
+            motion:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            motion:layout_constraintTop_toBottomOf="@id/tvRainProb"
+            motion:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="15dp"
+            android:scaleX="1.2" />
+        <Constraint
+            android:id="@+id/tvCurTemp"
+            motion:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            motion:layout_constraintTop_toBottomOf="@id/tvRainProb"
+            motion:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="15dp"
+            android:scaleX="1.2" />
+        <Constraint
+            android:id="@+id/tvCurTemp"
+            motion:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            motion:layout_constraintTop_toBottomOf="@id/tvRainProb"
+            motion:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="15dp"
+            android:scaleX="1" />
+        <Constraint
+            android:id="@+id/tvCurTemp"
+            motion:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            motion:layout_constraintTop_toBottomOf="@id/tvRainProb"
+            motion:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="15dp"
+            android:scaleY="1" />
+        <Constraint
+            android:id="@+id/tvCurTemp"
+            motion:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            motion:layout_constraintTop_toBottomOf="@id/tvRainProb"
+            motion:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="15dp"
+            android:scaleY="1" />
     </ConstraintSet>
 
     <ConstraintSet android:id="@+id/end">
@@ -31,7 +94,8 @@
             motion:layout_constraintStart_toStartOf="parent"
             android:id="@+id/tvLocation"
             android:layout_marginStart="15dp"
-            android:layout_marginTop="20dp" />
+            android:layout_marginTop="20dp"
+            motion:pathMotionArc="startHorizontal" />
         <Constraint
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
@@ -47,6 +111,8 @@
             android:id="@+id/tvCurTemp"
             android:layout_marginEnd="15dp"
             motion:layout_constraintTop_toTopOf="parent"
-            android:layout_marginTop="35dp" />
+            android:layout_marginTop="25dp"
+            android:scaleX=".5"
+            android:scaleY=".5" />
     </ConstraintSet>
 </MotionScene>

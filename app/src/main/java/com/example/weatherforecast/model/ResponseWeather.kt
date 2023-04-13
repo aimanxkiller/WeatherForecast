@@ -79,3 +79,6 @@ data class HourlyUnits(
 	@field:SerializedName("time")
 	val time: String? = null
 )
+
+data class ErrorResponse(val message: String)
+

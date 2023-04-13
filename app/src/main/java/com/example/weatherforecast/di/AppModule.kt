@@ -2,6 +2,7 @@ package com.example.weatherforecast.di
 
 import com.example.weatherforecast.api.APIService
 import com.example.weatherforecast.api.APIService.Companion.BASE_URL
+import com.haroldadmin.cnradapter.NetworkResponseAdapterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -19,7 +20,7 @@ object AppModule {
     fun provideRetrofit():Retrofit{
         return Retrofit.Builder()
             .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
+            .addCallAdapterFactory(NetworkResponseAdapterFactory())
             .build()
     }
 

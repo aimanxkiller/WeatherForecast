@@ -6,29 +6,25 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
-import android.graphics.Rect
+import android.location.Geocoder
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.TextView
+import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import com.example.weatherforecast.R
-import com.example.weatherforecast.viewmodel.ViewModelWeather
-import dagger.hilt.android.AndroidEntryPoint
-import android.location.Geocoder
-import android.widget.RelativeLayout
-import androidx.constraintlayout.motion.widget.MotionLayout
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.weatherforecast.R
 import com.example.weatherforecast.adapter.RecyclerViewAdapter
+import com.example.weatherforecast.viewmodel.ViewModelWeather
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 import kotlin.math.roundToInt
 
@@ -52,8 +48,8 @@ class WeatherFragment : Fragment() {
     private lateinit var locationListener: LocationListener
     private val viewModel:ViewModelWeather by activityViewModels()
 
-    private var latitude:Double? = 3.132
-    private var longitude:Double? = 101.684
+    private var latitude:Double? = 0.0
+    private var longitude:Double? = 0.0
 
     private lateinit var tvLocation:TextView
     private lateinit var tvCurTemp:TextView
@@ -75,7 +71,6 @@ class WeatherFragment : Fragment() {
         val addresses = geocoder.getFromLocation(latitude!!, longitude!!, 1)
         val address = addresses!!.firstOrNull()
         tvLocation.text = "${address?.locality}"
-        getWeatherForecast(latitude!!, longitude!!)
 
         bottomSheetSettings()
 
@@ -113,7 +108,6 @@ class WeatherFragment : Fragment() {
             "true",
             7,
             "auto")
-
         viewModel.responseBody.observe(viewLifecycleOwner){
             tvCurTemp.text = "${it.currentWeather?.temperature?.roundToInt()}\u00B0"
             tvRain.text = "Chance of Rain : ${viewModel.getCurAvg()}%"
