@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MotionScene 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:motion="http://schemas.android.com/apk/res-auto">
+
+    <Transition
+        motion:constraintSetEnd="@+id/end"
+        motion:constraintSetStart="@id/start"
+        motion:duration="1000">
+       <KeyFrameSet>
+       </KeyFrameSet>
+    </Transition>
+
+    <ConstraintSet android:id="@+id/start">
+        <Constraint
+            motion:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            motion:layout_constraintBottom_toBottomOf="parent"
+            motion:layout_constraintTop_toTopOf="parent"
+            motion:layout_constraintStart_toStartOf="parent"
+            android:id="@+id/tvLocation"
+            motion:layout_constraintVertical_bias="0.35" />
+    </ConstraintSet>
+
+    <ConstraintSet android:id="@+id/end">
+        <Constraint
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            motion:layout_constraintTop_toTopOf="parent"
+            motion:layout_constraintStart_toStartOf="parent"
+            android:id="@+id/tvLocation"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="20dp" />
+        <Constraint
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:layout_width="wrap_content"
+            motion:layout_constraintTop_toBottomOf="@id/tvLocation"
+            motion:layout_constraintStart_toStartOf="parent"
+            android:id="@+id/tvRainProb"
+            android:layout_marginStart="15dp" />
+        <Constraint
+            android:layout_height="wrap_content"
+            motion:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="wrap_content"
+            android:id="@+id/tvCurTemp"
+            android:layout_marginEnd="15dp"
+            motion:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="35dp" />
+    </ConstraintSet>
+</MotionScene>

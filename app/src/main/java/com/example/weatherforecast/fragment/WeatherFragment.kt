@@ -23,6 +23,8 @@ import com.example.weatherforecast.viewmodel.ViewModelWeather
 import dagger.hilt.android.AndroidEntryPoint
 import android.location.Geocoder
 import android.widget.RelativeLayout
+import androidx.constraintlayout.motion.widget.MotionLayout
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.weatherforecast.adapter.RecyclerViewAdapter
@@ -60,14 +62,14 @@ class WeatherFragment : Fragment() {
     private lateinit var bottomSheet:View
     private lateinit var recyclerViewAdapter:RecyclerViewAdapter
     private lateinit var geocoder:Geocoder
-    private lateinit var parentLayout:RelativeLayout
+    private lateinit var motion:MotionLayout
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         tvLocation = view.findViewById(R.id.tvLocation)
         tvCurTemp = view.findViewById(R.id.tvCurTemp)
         tvRain = view.findViewById(R.id.tvRainProb)
         bottomSheet = view.findViewById(R.id.bottom_sheet)
-        parentLayout = view.findViewById(R.id.main_layout)
+        motion = view.findViewById(R.id.main_layout)
 
         //Get initial location
         val addresses = geocoder.getFromLocation(latitude!!, longitude!!, 1)
@@ -81,13 +83,17 @@ class WeatherFragment : Fragment() {
 
     private fun bottomSheetSettings(){
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
-        parentLayout.setOnClickListener {
-            if(bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED){
-                bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        bottomSheetBehavior.addBottomSheetCallback(object :BottomSheetBehavior.BottomSheetCallback(){
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                //do nothing
             }
-        }
-        val recycler2 = bottomSheet.findViewById<RecyclerView>(R.id.recyclerBottomSheet)
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                //progress for top view
+                motion.progress = slideOffset
+            }
+        })
 
+        val recycler2 = bottomSheet.findViewById<RecyclerView>(R.id.recyclerBottomSheet)
         recycler2.apply {
             layoutManager = LinearLayoutManager(requireContext(),LinearLayoutManager.VERTICAL,false)
             recyclerViewAdapter = RecyclerViewAdapter()
@@ -105,7 +111,7 @@ class WeatherFragment : Fragment() {
             longitude,
             "temperature_2m,precipitation_probability",
             "true",
-            10,
+            7,
             "auto")
 
         viewModel.responseBody.observe(viewLifecycleOwner){

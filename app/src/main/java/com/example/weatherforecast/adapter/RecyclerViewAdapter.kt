@@ -1,5 +1,6 @@
 package com.example.weatherforecast.adapter
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -44,7 +45,7 @@ class RecyclerViewAdapter:RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder>
             }
         }
 
-        holder.bind(date,avg)
+        holder.bind(date,avg,position)
     }
 
     override fun getItemCount(): Int {
@@ -55,7 +56,13 @@ class RecyclerViewAdapter:RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder>
         private val date:TextView = itemView.findViewById(R.id.tvDate)
         private val temp:TextView = itemView.findViewById(R.id.tvTemp)
 
-        fun bind(datePass: String, avg: Double) {
+        fun bind(datePass: String, avg: Double, position: Int) {
+
+            if (position == 0 ){
+                date.setTextColor(Color.BLACK)
+                temp.setTextColor(Color.BLACK)
+            }
+
             date.text = datePass
             temp.text = "${avg.roundToInt()}°"
         }
