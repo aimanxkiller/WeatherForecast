@@ -1,9 +1,9 @@
 package com.example.weatherforecast.api
 
 import com.example.weatherforecast.model.ErrorResponse
+import com.example.weatherforecast.model.ErrorResponseAPI
 import com.example.weatherforecast.model.ResponseWeather
 import com.haroldadmin.cnradapter.NetworkResponse
-import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -23,6 +23,6 @@ interface APIService {
         @Query("current_weather")currentWeather: String? = "true",
         @Query("forecast_days")days:Int,
         @Query("timezone")timeZone:String? = "auto"
-    ): NetworkResponse<ResponseWeather,ErrorResponse>
+    ): NetworkResponse<ResponseWeather,ErrorResponseAPI>
 
 }

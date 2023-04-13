@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.weatherforecast.di.Repository
+import com.example.weatherforecast.model.ErrorResponse
 import com.example.weatherforecast.model.ResponseWeather
 import com.haroldadmin.cnradapter.NetworkResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -30,43 +31,29 @@ class ViewModelWeather @Inject constructor(
     ){
 
         viewModelScope.launch {
-            val request = repo.getForecast(lat,long,hourly,curWeather,days,timeZone)
 
-            when(request){
+            when(val request = repo.getWeather(lat,long,hourly,curWeather,days,timeZone)){
                 is NetworkResponse.Success -> {
                     responseBody.postValue(request.body)
                 }
-                is NetworkResponse.ServerError -> TODO()
+                is NetworkResponse.ServerError -> {
+                    error.postValue("Server Error")
+                }
 
-                is NetworkResponse.NetworkError -> TODO()
+                is NetworkResponse.NetworkError -> {
+                    error.postValue("Network Error")
+                }
 
-                is NetworkResponse.UnknownError -> TODO()
-
+                is NetworkResponse.UnknownError -> {
+                    error.postValue("Unknown Error")
+                }
             }
 
         }
 
     }
 
-//    fun getWeather(
-//        lat:Double,
-//        long:Double,
-//        hourly: String?,
-//        curWeather:String?,
-//        days:Int,
-//        timeZone:String?
-//    ){
-//
-//        viewModelScope.launch {
-//            val request = repo.getForecast(lat,long,hourly,curWeather,days,timeZone)
-//            when(request){
-//
-//            }
-//
-//
-//        }
-//
-//    }
+
 
     fun getCurAvg(): String {
         val x = responseBody.value?.hourly?.precipitationProbability as List<Int>
