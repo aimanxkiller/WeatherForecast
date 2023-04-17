@@ -3,6 +3,7 @@
 package com.example.weatherforecast.fragment
 
 import android.Manifest
+import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
@@ -13,12 +14,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.weatherforecast.R
@@ -37,10 +39,6 @@ class WeatherFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        geocoder = Geocoder(requireContext(), Locale.getDefault())
-
-        checkLocation()
-
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_weather, container, false)
     }
@@ -60,6 +58,7 @@ class WeatherFragment : Fragment() {
     private lateinit var recyclerViewAdapter:RecyclerViewAdapter
     private lateinit var geocoder:Geocoder
     private lateinit var motion:MotionLayout
+    private lateinit var pBar:ProgressBar
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         tvLocation = view.findViewById(R.id.tvLocation)
@@ -67,9 +66,17 @@ class WeatherFragment : Fragment() {
         tvRain = view.findViewById(R.id.tvRainProb)
         bottomSheet = view.findViewById(R.id.bottom_sheet)
         motion = view.findViewById(R.id.main_layout)
+        pBar = view.findViewById(R.id.progressBar2)
+        geocoder = Geocoder(requireContext(), Locale.getDefault())
+
+        tvLocation.visibility = View.INVISIBLE
+        tvRain.visibility = View.INVISIBLE
+        tvCurTemp.visibility = View.INVISIBLE
+
+        checkLocation()
 
         //Get initial location
-        val addresses = geocoder.getFromLocation(latitude!!, longitude!!, 1)
+        val addresses = geocoder.getFromLocation(latitude?:0.00, longitude!!, 1)
         val address = addresses!!.firstOrNull()
         tvLocation.text = "${address?.locality}"
 
@@ -102,6 +109,7 @@ class WeatherFragment : Fragment() {
 
     @SuppressLint("NotifyDataSetChanged")
     private fun getWeatherForecast(latitude: Double, longitude: Double) {
+
         viewModel.getForecast(
             latitude,
             longitude,
@@ -109,27 +117,52 @@ class WeatherFragment : Fragment() {
             "true",
             7,
             "auto")
+
         viewModel.responseBody.observe(viewLifecycleOwner){
             tvCurTemp.text = "${it.currentWeather?.temperature?.roundToInt()}\u00B0"
             tvRain.text = "Chance of Rain : ${viewModel.getCurAvg()}%"
             recyclerViewAdapter.setData(it)
         }
+
+        viewModel.error.observe(viewLifecycleOwner){
+            Toast.makeText(requireContext(),it,Toast.LENGTH_SHORT).show()
+        }
+
+        viewModel.loading.observe(viewLifecycleOwner){
+            when(it){
+                true ->{
+                    pBar.visibility = View.VISIBLE
+                }
+                false ->{
+                    pBar.visibility = View.GONE
+                    tvLocation.visibility = View.VISIBLE
+                    tvRain.visibility = View.VISIBLE
+                    tvCurTemp.visibility = View.VISIBLE
+                }
+            }
+        }
     }
+
+    var locationObtained = false
 
     @SuppressLint("SetTextI18n")
     private fun checkLocation(){
 
         locationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
         locationListener = LocationListener { location ->
-
             //Get Lat and Long here
             latitude = String.format("%.3f", location.latitude).toDouble()
             longitude = String.format("%.3f",location.longitude).toDouble()
 
             val addresses = geocoder.getFromLocation(latitude!!, longitude!!, 1)
             val address = addresses!!.firstOrNull()
+
             tvLocation.text = "${address?.locality}"
-            getWeatherForecast(latitude!!, longitude!!)
+
+            if (!locationObtained){
+                getWeatherForecast(latitude!!, longitude!!)
+                locationObtained = true
+            }
         }
 
         if (ActivityCompat.checkSelfPermission(

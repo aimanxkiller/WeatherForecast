@@ -28,8 +28,6 @@ class LoadingFragment : Fragment() {
 
         //Setting up progress bar (Fake loading currently)
         progressBar()
-
-
     }
 
     private fun progressBar(){

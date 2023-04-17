@@ -80,5 +80,3 @@ data class HourlyUnits(
 	val time: String? = null
 )
 
-data class ErrorResponse(val message: String)
-

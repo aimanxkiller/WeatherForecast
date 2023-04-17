@@ -26,7 +26,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         checkLocationPermissions()
-
     }
 
     // Check for permission status and request permissions if not granted

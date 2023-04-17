@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">WeatherForecast</string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Location</string>
-    <string name="chance_of_rain">Chance of Rain:</string>
-    <string name="currentTemp">50°</string>
+    <string name="hello_blank_fragment" />
+    <string name="chance_of_rain" />
+    <string name="currentTemp" />
 </resources>
