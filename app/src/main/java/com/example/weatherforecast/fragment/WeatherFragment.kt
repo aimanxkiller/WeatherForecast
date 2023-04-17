@@ -10,6 +10,7 @@ import android.location.Geocoder
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,7 +22,6 @@ import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.weatherforecast.R
 import com.example.weatherforecast.adapter.RecyclerViewAdapter
@@ -64,10 +64,12 @@ class WeatherFragment : Fragment() {
     private lateinit var tvRain:TextView
     private lateinit var bottomSheetBehavior:BottomSheetBehavior<*>
     private lateinit var bottomSheet:View
-    private lateinit var recyclerViewAdapter:RecyclerViewAdapter
     private lateinit var geocoder:Geocoder
     private lateinit var motion:MotionLayout
     private lateinit var pBar:ProgressBar
+
+    private val startTextSize = 140f // in sp
+    private val endTextSize = 40f // in sp
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         tvLocation = binding.tvLocation
@@ -80,6 +82,7 @@ class WeatherFragment : Fragment() {
         geocoder = Geocoder(requireContext(), Locale.getDefault())
 
         checkLocation()
+
         //bottomSheetSettings()
     }
 
@@ -113,8 +116,6 @@ class WeatherFragment : Fragment() {
         recycler2.apply {
             adapter = RecyclerViewAdapter(list)
         }
-
-
     }
 
     private fun getDate(time:String): String {
@@ -144,7 +145,6 @@ class WeatherFragment : Fragment() {
             tvCurTemp.text = "${it.currentWeather?.temperature?.roundToInt()}\u00B0"
             tvRain.text = "Chance of Rain : ${viewModel.getCurAvg()}%"
             bottomSheetSettings(it)
-
         }
 
         viewModel.error.observe(viewLifecycleOwner){

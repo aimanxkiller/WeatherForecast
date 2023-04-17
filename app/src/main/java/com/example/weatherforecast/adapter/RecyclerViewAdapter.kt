@@ -25,7 +25,11 @@ class RecyclerViewAdapter(private val list: ArrayList<TemaratureModel>):Recycler
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val item = list[position]
         holder.date.text = when(position){
-            0-> "Today"
+            0-> {
+                holder.date.setTextColor(Color.BLACK)
+                holder.temp.setTextColor(Color.BLACK)
+                "Today"
+            }
             1-> "Tomorrow"
             else -> item.time?:""
         }
