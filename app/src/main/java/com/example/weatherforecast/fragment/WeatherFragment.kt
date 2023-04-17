@@ -3,7 +3,6 @@
 package com.example.weatherforecast.fragment
 
 import android.Manifest
-import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
@@ -15,6 +14,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
+import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.constraintlayout.motion.widget.MotionLayout
@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.weatherforecast.R
 import com.example.weatherforecast.adapter.RecyclerViewAdapter
+import com.example.weatherforecast.databinding.FragmentWeatherBinding
 import com.example.weatherforecast.viewmodel.ViewModelWeather
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import dagger.hilt.android.AndroidEntryPoint
@@ -35,12 +36,17 @@ import kotlin.math.roundToInt
 @AndroidEntryPoint
 class WeatherFragment : Fragment() {
 
+    private lateinit var binding:FragmentWeatherBinding
+
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): RelativeLayout {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_weather, container, false)
+        binding = FragmentWeatherBinding.inflate(inflater,container,false)
+
+        return binding.root
     }
 
     private lateinit var locationManager: LocationManager
@@ -61,31 +67,22 @@ class WeatherFragment : Fragment() {
     private lateinit var pBar:ProgressBar
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        tvLocation = view.findViewById(R.id.tvLocation)
-        tvCurTemp = view.findViewById(R.id.tvCurTemp)
-        tvRain = view.findViewById(R.id.tvRainProb)
-        bottomSheet = view.findViewById(R.id.bottom_sheet)
-        motion = view.findViewById(R.id.main_layout)
-        pBar = view.findViewById(R.id.progressBar2)
+        tvLocation = binding.tvLocation
+        tvCurTemp = binding.tvCurTemp
+        tvRain = binding.tvRainProb
+        bottomSheet = binding.botSheet
+        motion = binding.mainLayout
+        pBar = binding.progressBar2
+
         geocoder = Geocoder(requireContext(), Locale.getDefault())
 
-        tvLocation.visibility = View.INVISIBLE
-        tvRain.visibility = View.INVISIBLE
-        tvCurTemp.visibility = View.INVISIBLE
-
         checkLocation()
-
-        //Get initial location
-        val addresses = geocoder.getFromLocation(latitude?:0.00, longitude!!, 1)
-        val address = addresses!!.firstOrNull()
-        tvLocation.text = "${address?.locality}"
-
         bottomSheetSettings()
-
     }
 
     private fun bottomSheetSettings(){
-        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
+        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet.findViewById(R.id.bottom_sheet))
+
         bottomSheetBehavior.addBottomSheetCallback(object :BottomSheetBehavior.BottomSheetCallback(){
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 //do nothing
@@ -108,14 +105,14 @@ class WeatherFragment : Fragment() {
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    private fun getWeatherForecast(latitude: Double, longitude: Double) {
+    private fun getWeatherForecast(latitude: Double?, longitude: Double?) {
 
         viewModel.getForecast(
             latitude,
             longitude,
             "temperature_2m,precipitation_probability",
             "true",
-            7,
+            null,
             "auto")
 
         viewModel.responseBody.observe(viewLifecycleOwner){
@@ -135,9 +132,6 @@ class WeatherFragment : Fragment() {
                 }
                 false ->{
                     pBar.visibility = View.GONE
-                    tvLocation.visibility = View.VISIBLE
-                    tvRain.visibility = View.VISIBLE
-                    tvCurTemp.visibility = View.VISIBLE
                 }
             }
         }
@@ -154,13 +148,15 @@ class WeatherFragment : Fragment() {
             latitude = String.format("%.3f", location.latitude).toDouble()
             longitude = String.format("%.3f",location.longitude).toDouble()
 
-            val addresses = geocoder.getFromLocation(latitude!!, longitude!!, 1)
-            val address = addresses!!.firstOrNull()
+            val addresses = geocoder.getFromLocation(latitude as Double, longitude as Double, 1)
+            val address = addresses?.firstOrNull()
 
             tvLocation.text = "${address?.locality}"
 
             if (!locationObtained){
-                getWeatherForecast(latitude!!, longitude!!)
+                tvLocation.text = "${address?.locality}"
+
+                getWeatherForecast(latitude, longitude)
                 locationObtained = true
             }
         }

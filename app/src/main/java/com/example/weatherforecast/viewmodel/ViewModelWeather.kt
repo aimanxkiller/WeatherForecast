@@ -8,6 +8,7 @@ import com.example.weatherforecast.di.Repository
 import com.example.weatherforecast.model.ResponseWeather
 import com.haroldadmin.cnradapter.NetworkResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.math.roundToInt
@@ -23,18 +24,18 @@ class ViewModelWeather @Inject constructor(
     var loading = MutableLiveData<Boolean>()
 
     fun getForecast(
-        lat:Double,
-        long:Double,
+        lat:Double?,
+        long:Double?,
         hourly: String?,
         curWeather:String?,
-        days:Int,
+        days:Int?,
         timeZone:String?
     ){
 
         viewModelScope.launch {
-
-            //Add progressbar to load API
+            //Progress bar start
             loading.postValue(true)
+            delay(1500)
             when(val request = repo.getWeather(lat,long,hourly,curWeather,days,timeZone)){
                 is NetworkResponse.Success -> {
                     responseBody.postValue(request.body)
@@ -49,8 +50,8 @@ class ViewModelWeather @Inject constructor(
                     error.postValue("Unknown Error")
                 }
             }
+            //Progress bar ends
             loading.postValue(false)
-            //Remove loading here
         }
 
     }
@@ -62,7 +63,6 @@ class ViewModelWeather @Inject constructor(
         for (i in 0 until 24) {
             sum += x[i]
         }
-
         return (sum/24).roundToInt().toString()
     }
 

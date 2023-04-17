@@ -12,10 +12,10 @@ class Repository @Inject constructor(
 ){
     suspend fun getWeather(
         lat:Double?,
-        long:Double,
+        long:Double?,
         hourly: String?,
         curWeather:String?,
-        days:Int,
+        days:Int?,
         timeZone:String?): NetworkResponse<ResponseWeather, ResponseError> {
         return api.getForecast(lat,long,hourly,curWeather,days,timeZone)
     }

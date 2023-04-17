@@ -45,7 +45,7 @@ class RecyclerViewAdapter:RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder>
     }
 
     override fun getItemCount(): Int {
-        return (item.hourly!!.time!!.size/24)
+        return (item.hourly?.time!!.size/24)
     }
 
     class MyViewHolder(view: View):RecyclerView.ViewHolder(view) {

@@ -18,10 +18,10 @@ interface APIService {
     @GET("forecast?")
     suspend fun getForecast(
         @Query("latitude")latitude:Double?,
-        @Query("longitude")longitude:Double,
+        @Query("longitude")longitude:Double?,
         @Query("hourly")hourly: String? = "temperature_2m,precipitation_probability",
         @Query("current_weather")currentWeather: String? = "true",
-        @Query("forecast_days")days:Int,
+        @Query("forecast_days")days:Int? = 7,
         @Query("timezone")timeZone:String? = "auto"
     ): NetworkResponse<ResponseWeather,ResponseError>
 
