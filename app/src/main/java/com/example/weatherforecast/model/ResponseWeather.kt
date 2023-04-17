@@ -38,13 +38,13 @@ data class ResponseWeather(
 data class Hourly(
 
 	@field:SerializedName("temperature_2m")
-	val temperature2m: List<Double?>? = null,
+	val temperature2m: ArrayList<Double> = arrayListOf(),
 
 	@field:SerializedName("precipitation_probability")
 	val precipitationProbability: List<Int?>? = null,
 
 	@field:SerializedName("time")
-	val time: List<String?>? = null
+	val time: List<String> = arrayListOf()
 )
 
 data class CurrentWeather(

@@ -26,9 +26,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.weatherforecast.R
 import com.example.weatherforecast.adapter.RecyclerViewAdapter
 import com.example.weatherforecast.databinding.FragmentWeatherBinding
+import com.example.weatherforecast.model.ResponseWeather
+import com.example.weatherforecast.model.TemaratureModel
 import com.example.weatherforecast.viewmodel.ViewModelWeather
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import dagger.hilt.android.AndroidEntryPoint
+import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.roundToInt
 
@@ -77,10 +80,10 @@ class WeatherFragment : Fragment() {
         geocoder = Geocoder(requireContext(), Locale.getDefault())
 
         checkLocation()
-        bottomSheetSettings()
+        //bottomSheetSettings()
     }
 
-    private fun bottomSheetSettings(){
+    private fun bottomSheetSettings(response: ResponseWeather){
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet.findViewById(R.id.bottom_sheet))
 
         bottomSheetBehavior.addBottomSheetCallback(object :BottomSheetBehavior.BottomSheetCallback(){
@@ -94,14 +97,36 @@ class WeatherFragment : Fragment() {
         })
 
         val recycler2 = bottomSheet.findViewById<RecyclerView>(R.id.recyclerBottomSheet)
+
+        val group = response.hourly?.time?.groupBy { it.split("T")[0]}?: mapOf()
+        val list = arrayListOf<TemaratureModel>()
+        var start=0
+        var end=23
+        group.forEach {
+            val tempList =response.hourly?.temperature2m?.slice(start..end)?: arrayListOf()
+
+            val temp = TemaratureModel(time = getDate(it.key), temperature2m = (tempList.sum()/24))
+            list.add(temp)
+            start+=24
+            end+=24
+        }
         recycler2.apply {
-            layoutManager = LinearLayoutManager(requireContext(),LinearLayoutManager.VERTICAL,false)
-            recyclerViewAdapter = RecyclerViewAdapter()
+            adapter = RecyclerViewAdapter(list)
         }
-        viewModel.responseBody.observe(viewLifecycleOwner){
-            recyclerViewAdapter.setData(it)
-            recycler2.adapter = recyclerViewAdapter
+
+
+    }
+
+    private fun getDate(time:String): String {
+        if (time.isEmpty()){
+            return time
         }
+        val isoFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+        val date = isoFormat.parse(time)
+
+        val monthDateFormat = SimpleDateFormat("MMM dd", Locale.US)
+
+        return monthDateFormat.format(date as Date)
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -118,7 +143,8 @@ class WeatherFragment : Fragment() {
         viewModel.responseBody.observe(viewLifecycleOwner){
             tvCurTemp.text = "${it.currentWeather?.temperature?.roundToInt()}\u00B0"
             tvRain.text = "Chance of Rain : ${viewModel.getCurAvg()}%"
-            recyclerViewAdapter.setData(it)
+            bottomSheetSettings(it)
+
         }
 
         viewModel.error.observe(viewLifecycleOwner){

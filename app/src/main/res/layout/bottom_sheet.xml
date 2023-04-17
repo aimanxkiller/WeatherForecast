@@ -18,6 +18,8 @@
         android:id="@+id/recyclerBottomSheet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        android:orientation="vertical"
         android:maxHeight="200dp"
         />
 

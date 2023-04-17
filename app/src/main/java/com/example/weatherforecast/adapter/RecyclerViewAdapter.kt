@@ -8,17 +8,13 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.weatherforecast.R
 import com.example.weatherforecast.model.ResponseWeather
+import com.example.weatherforecast.model.TemaratureModel
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.math.roundToInt
 
-class RecyclerViewAdapter:RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder>() {
-
-    private lateinit var item:ResponseWeather
-
-    fun setData(responseWeather: ResponseWeather) {
-        this.item = responseWeather
-    }
+class RecyclerViewAdapter(private val list: ArrayList<TemaratureModel>):RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val inflater = LayoutInflater.from(parent.context).inflate(R.layout.rows_item,parent,false)
@@ -27,62 +23,24 @@ class RecyclerViewAdapter:RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder>
 
     //setting data values here
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        val date:String
-        val avg: Double
-
-        when(position){
-            0 -> {
-                date = "Today"
-                avg = calAvg(position) }
-            1 -> {
-                date = "Tomorrow"
-                avg = calAvg(position) }
-            else -> {
-                date = getDate(position)
-                avg = calAvg(position) }
+        val item = list[position]
+        holder.date.text = when(position){
+            0-> "Today"
+            1-> "Tomorrow"
+            else -> item.time?:""
         }
-        holder.bind(date,avg,position)
+        holder.temp.text = "${item.temperature2m?.roundToInt().toString()}\u00B0"
+
     }
 
-    override fun getItemCount(): Int {
-        return (item.hourly?.time!!.size/24)
-    }
+    override fun getItemCount()= list.size
 
     class MyViewHolder(view: View):RecyclerView.ViewHolder(view) {
-        private val date:TextView = itemView.findViewById(R.id.tvDate)
-        private val temp:TextView = itemView.findViewById(R.id.tvTemp)
-
-        fun bind(datePass: String, avg: Double, position: Int) {
-            when (position){
-                0->{
-                    date.setTextColor(Color.BLACK)
-                    temp.setTextColor(Color.BLACK)
-                }
-            }
-            date.text = datePass
-            temp.text = "${avg.roundToInt()}°"
-        }
-
+        val date:TextView = itemView.findViewById(R.id.tvDate)
+        val temp:TextView = itemView.findViewById(R.id.tvTemp)
     }
 
-    private fun calAvg(pos:Int):Double{
-        var sum = 0.0
-        for(i in (pos*24) until (pos+1)*24){
-            sum += item.hourly!!.temperature2m!![i]!!
-        }
-        return String.format("%.3f", sum/24).toDouble()
-    }
 
-    private fun getDate(position: Int): String {
 
-        val isoString = item.hourly!!.time!![position*24] as String
-
-        val isoFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm", Locale.US)
-        val date = isoFormat.parse(isoString)
-
-        val monthDateFormat = SimpleDateFormat("MMM dd", Locale.US)
-
-        return monthDateFormat.format(date as Date)
-    }
 
 }
