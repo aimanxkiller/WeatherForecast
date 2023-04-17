@@ -33,18 +33,14 @@ class RecyclerViewAdapter:RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder>
         when(position){
             0 -> {
                 date = "Today"
-                avg = calAvg(position)
-            }
+                avg = calAvg(position) }
             1 -> {
                 date = "Tomorrow"
-                avg = calAvg(position)
-            }
+                avg = calAvg(position) }
             else -> {
                 date = getDate(position)
-                avg = calAvg(position)
-            }
+                avg = calAvg(position) }
         }
-
         holder.bind(date,avg,position)
     }
 
@@ -57,12 +53,12 @@ class RecyclerViewAdapter:RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder>
         private val temp:TextView = itemView.findViewById(R.id.tvTemp)
 
         fun bind(datePass: String, avg: Double, position: Int) {
-
-            if (position == 0 ){
-                date.setTextColor(Color.BLACK)
-                temp.setTextColor(Color.BLACK)
+            when (position){
+                0->{
+                    date.setTextColor(Color.BLACK)
+                    temp.setTextColor(Color.BLACK)
+                }
             }
-
             date.text = datePass
             temp.text = "${avg.roundToInt()}°"
         }
