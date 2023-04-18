@@ -86,6 +86,9 @@ dependencies {
     // Lifecycles only (without ViewModel or LiveData)
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version")
 
+    //FusedLocation
+    implementation 'com.google.android.gms:play-services-location:21.0.1'
+
 }
 
 kapt {

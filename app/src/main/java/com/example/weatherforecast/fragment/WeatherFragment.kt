@@ -4,13 +4,10 @@ package com.example.weatherforecast.fragment
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Geocoder
-import android.location.LocationListener
-import android.location.LocationManager
+import android.location.Location
 import android.os.Bundle
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,6 +15,7 @@ import android.widget.ProgressBar
 import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
@@ -29,6 +27,8 @@ import com.example.weatherforecast.databinding.FragmentWeatherBinding
 import com.example.weatherforecast.model.ResponseWeather
 import com.example.weatherforecast.model.TemaratureModel
 import com.example.weatherforecast.viewmodel.ViewModelWeather
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
@@ -37,10 +37,15 @@ import kotlin.math.roundToInt
 
 @SuppressLint("SetTextI18n")
 @AndroidEntryPoint
+
+// TODO -
+// Save location temp and time to room database
+// Load previous saved data on boot up
+// Then only refresh data once everytime app boots to update
+
 class WeatherFragment : Fragment() {
 
     private lateinit var binding:FragmentWeatherBinding
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -52,8 +57,8 @@ class WeatherFragment : Fragment() {
         return binding.root
     }
 
-    private lateinit var locationManager: LocationManager
-    private lateinit var locationListener: LocationListener
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+
     private val viewModel:ViewModelWeather by activityViewModels()
 
     private var latitude:Double? = 0.0
@@ -68,9 +73,6 @@ class WeatherFragment : Fragment() {
     private lateinit var motion:MotionLayout
     private lateinit var pBar:ProgressBar
 
-    private val startTextSize = 140f // in sp
-    private val endTextSize = 40f // in sp
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         tvLocation = binding.tvLocation
         tvCurTemp = binding.tvCurTemp
@@ -79,11 +81,12 @@ class WeatherFragment : Fragment() {
         motion = binding.mainLayout
         pBar = binding.progressBar2
 
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
+
+        requireActivity().onBackPressedDispatcher.addCallback(requireActivity(),onBackPressedCallback)
         geocoder = Geocoder(requireContext(), Locale.getDefault())
 
         checkLocation()
-
-        //bottomSheetSettings()
     }
 
     private fun bottomSheetSettings(response: ResponseWeather){
@@ -154,6 +157,9 @@ class WeatherFragment : Fragment() {
         viewModel.loading.observe(viewLifecycleOwner){
             when(it){
                 true ->{
+                    tvRain.text = " "
+                    tvCurTemp.text = " "
+
                     pBar.visibility = View.VISIBLE
                 }
                 false ->{
@@ -163,66 +169,45 @@ class WeatherFragment : Fragment() {
         }
     }
 
-    var locationObtained = false
-
     @SuppressLint("SetTextI18n")
     private fun checkLocation(){
-        var currentLocation:String?=null
-
-        locationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        locationListener = LocationListener { location ->
-            //Get Lat and Long here
-            latitude = String.format("%.3f", location.latitude).toDouble()
-            longitude = String.format("%.3f",location.longitude).toDouble()
-
-            val addresses = geocoder.getFromLocation(latitude as Double, longitude as Double, 1)
-            val address = addresses?.firstOrNull()
-
-            currentLocation = "${address?.locality}"
-
-            if (!locationObtained){
-                tvLocation.text = "${address?.locality}"
-
-                getWeatherForecast(latitude, longitude)
-                locationObtained = true
-            }else{
-                // Do nothing
-            }
-
-            if(currentLocation.equals(tvLocation.text.toString(),true)){
-                //Do nothing
-            }else{
-                tvLocation.text = "${address?.locality}"
-
-                getWeatherForecast(latitude, longitude)
-            }
-
-        }
 
         if (ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED &&
-            ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            locationManager.requestLocationUpdates(
-                LocationManager.GPS_PROVIDER,
-                0,
-                0f,
-                locationListener
-            )
-        } else {
-            ActivityCompat.requestPermissions(
                 requireActivity(),
-                arrayOf(
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                ),
-                1
-            )
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                requireActivity(),
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
+
+        //Updated here used fusedLocationClient for better location get
+        fusedLocationClient.lastLocation
+            .addOnSuccessListener { location: Location? ->
+                if (location != null) {
+                    // Use the location
+                    latitude = location.latitude
+                    longitude = location.longitude
+
+                    val addresses = geocoder.getFromLocation(latitude as Double, longitude as Double, 1)
+                    val address = addresses?.firstOrNull()
+
+                    // Do something with latitude and longitude
+                    tvLocation.text = "${address?.locality}"
+                    getWeatherForecast(latitude, longitude)
+                }
+            }
+            .addOnFailureListener { e ->
+                // Handle the error
+                Toast.makeText(requireContext(),"Error: $e",Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    private val onBackPressedCallback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            // Handle the back button event
         }
     }
 

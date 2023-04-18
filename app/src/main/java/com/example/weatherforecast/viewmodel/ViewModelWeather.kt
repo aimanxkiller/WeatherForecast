@@ -1,6 +1,5 @@
 package com.example.weatherforecast.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -21,7 +20,7 @@ class ViewModelWeather @Inject constructor(
 
     var responseBody = MutableLiveData<ResponseWeather>()
     var error = MutableLiveData<String>()
-    var loading = MutableLiveData<Boolean>()
+    var loading = MutableLiveData<Boolean>(false)
 
     fun getForecast(
         lat:Double?,
