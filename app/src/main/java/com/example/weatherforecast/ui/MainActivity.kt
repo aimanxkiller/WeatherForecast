@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     // Check for permission status and request permissions if not granted
-    private fun checkLocationPermissions() {
+    fun checkLocationPermissions() {
         if (ActivityCompat.checkSelfPermission(
                 this,
                 ACCESS_FINE_LOCATION

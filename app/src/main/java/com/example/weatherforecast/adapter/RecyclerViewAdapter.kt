@@ -7,14 +7,11 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.weatherforecast.R
-import com.example.weatherforecast.model.ResponseWeather
-import com.example.weatherforecast.model.TemaratureModel
-import java.text.SimpleDateFormat
-import java.util.*
+import com.example.weatherforecast.model.TemperatureModel
 import kotlin.collections.ArrayList
 import kotlin.math.roundToInt
 
-class RecyclerViewAdapter(private val list: ArrayList<TemaratureModel>):RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder>() {
+class RecyclerViewAdapter(private val list: ArrayList<TemperatureModel>):RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val inflater = LayoutInflater.from(parent.context).inflate(R.layout.rows_item,parent,false)

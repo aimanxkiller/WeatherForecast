@@ -25,7 +25,8 @@ import com.example.weatherforecast.R
 import com.example.weatherforecast.adapter.RecyclerViewAdapter
 import com.example.weatherforecast.databinding.FragmentWeatherBinding
 import com.example.weatherforecast.model.ResponseWeather
-import com.example.weatherforecast.model.TemaratureModel
+import com.example.weatherforecast.model.TemperatureModel
+import com.example.weatherforecast.ui.MainActivity
 import com.example.weatherforecast.viewmodel.ViewModelWeather
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -105,13 +106,13 @@ class WeatherFragment : Fragment() {
         val recycler2 = bottomSheet.findViewById<RecyclerView>(R.id.recyclerBottomSheet)
 
         val group = response.hourly?.time?.groupBy { it.split("T")[0]}?: mapOf()
-        val list = arrayListOf<TemaratureModel>()
+        val list = arrayListOf<TemperatureModel>()
         var start=0
         var end=23
         group.forEach {
             val tempList =response.hourly?.temperature2m?.slice(start..end)?: arrayListOf()
 
-            val temp = TemaratureModel(time = getDate(it.key), temperature2m = (tempList.sum()/24))
+            val temp = TemperatureModel(time = getDate(it.key), temperature2m = (tempList.sum()/24))
             list.add(temp)
             start+=24
             end+=24
@@ -180,6 +181,9 @@ class WeatherFragment : Fragment() {
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
+            //Handle permission here if not granted
+            (activity as MainActivity).checkLocationPermissions()
+
             return
         }
 
