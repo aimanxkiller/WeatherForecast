@@ -167,6 +167,7 @@ class WeatherFragment : Fragment() {
 
     @SuppressLint("SetTextI18n")
     private fun checkLocation(){
+        var currentLocation:String?=null
 
         locationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
         locationListener = LocationListener { location ->
@@ -177,14 +178,25 @@ class WeatherFragment : Fragment() {
             val addresses = geocoder.getFromLocation(latitude as Double, longitude as Double, 1)
             val address = addresses?.firstOrNull()
 
-            tvLocation.text = "${address?.locality}"
+            currentLocation = "${address?.locality}"
 
             if (!locationObtained){
                 tvLocation.text = "${address?.locality}"
 
                 getWeatherForecast(latitude, longitude)
                 locationObtained = true
+            }else{
+                // Do nothing
             }
+
+            if(currentLocation.equals(tvLocation.text.toString(),true)){
+                //Do nothing
+            }else{
+                tvLocation.text = "${address?.locality}"
+
+                getWeatherForecast(latitude, longitude)
+            }
+
         }
 
         if (ActivityCompat.checkSelfPermission(
