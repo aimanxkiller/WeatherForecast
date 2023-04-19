@@ -4,10 +4,14 @@ package com.example.weatherforecast.fragment
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,9 +22,10 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.example.weatherforecast.R
 import com.example.weatherforecast.adapter.RecyclerViewAdapter
@@ -34,9 +39,12 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.roundToInt
+
 
 @SuppressLint("SetTextI18n")
 @AndroidEntryPoint
@@ -59,6 +67,9 @@ class WeatherFragment : Fragment() {
 
         return binding.root
     }
+
+    private lateinit var locationManager: LocationManager
+    private lateinit var locationListener: LocationListener
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
@@ -88,6 +99,7 @@ class WeatherFragment : Fragment() {
         pBar = binding.progressBar2
         recycler2 = bottomSheet.findViewById(R.id.recyclerBottomSheet)
 
+        locationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
 
         requireActivity().onBackPressedDispatcher.addCallback(requireActivity(),onBackPressedCallback)
@@ -95,23 +107,27 @@ class WeatherFragment : Fragment() {
 
         loadCache()
 
-        checkLocation()
     }
 
     private fun loadCache(){
 
-        viewModel2.allData.observe(viewLifecycleOwner){
-            val list = arrayListOf<TemperatureModel>()
+        lifecycleScope.launch{
 
-            it.forEachIndexed { index, tempCache ->
-                val x = TemperatureModel(tempCache.date,tempCache.temp?.toDouble())
-                list.add(x)
+            viewModel2.allData.observe(viewLifecycleOwner) {
+                val list = arrayListOf<TemperatureModel>()
+                tvLocation.text = "TEMP"
+                it.forEachIndexed { index, tempCache ->
+                    val x = TemperatureModel(tempCache.date, tempCache.temp?.toDouble())
+                    list.add(x)
+                }
+
+                recycler2.apply {
+                    adapter = RecyclerViewAdapter(list)
+                }
             }
 
-            recycler2.apply {
-                adapter = RecyclerViewAdapter(list)
-            }
-
+            delay(2500)
+            checkLocation()
         }
 
     }
@@ -199,20 +215,41 @@ class WeatherFragment : Fragment() {
 
     @SuppressLint("SetTextI18n")
     private fun checkLocation(){
+        var locationObtained = false
+
+        locationListener = LocationListener { location ->
+            if (!locationObtained){
+                locationObtained = true
+                locationManager.removeUpdates(locationListener)
+            }
+        }
 
         if (ActivityCompat.checkSelfPermission(
-                requireActivity(),
+                requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                requireActivity(),
+            ) == PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(
+                requireContext(),
                 Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
+            ) == PackageManager.PERMISSION_GRANTED
         ) {
-            //Handle permission here if not granted
-            (activity as MainActivity).checkLocationPermissions()
-
-            return
+            locationManager.requestLocationUpdates(
+                LocationManager.GPS_PROVIDER,
+                0,
+                0f,
+                locationListener
+            )
+        } else {
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ),
+                1
+            )
         }
+
 
         //Updated here used fusedLocationClient for better location get
         fusedLocationClient.lastLocation
