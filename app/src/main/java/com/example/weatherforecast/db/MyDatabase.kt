@@ -7,8 +7,8 @@ import androidx.room.RoomDatabase
 import com.example.weatherforecast.model.TempCache
 
 @Database(entities = [TempCache::class], version = 1)
-abstract class MyDatabase: RoomDatabase() {
-
+abstract class MyDatabase: RoomDatabase()
+{
     abstract fun getDao():TempDao
 
     companion object{

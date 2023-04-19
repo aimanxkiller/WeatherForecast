@@ -20,6 +20,7 @@ import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.RecyclerView
 import com.example.weatherforecast.R
 import com.example.weatherforecast.adapter.RecyclerViewAdapter
@@ -27,6 +28,7 @@ import com.example.weatherforecast.databinding.FragmentWeatherBinding
 import com.example.weatherforecast.model.ResponseWeather
 import com.example.weatherforecast.model.TemperatureModel
 import com.example.weatherforecast.ui.MainActivity
+import com.example.weatherforecast.viewmodel.ViewModelRoom
 import com.example.weatherforecast.viewmodel.ViewModelWeather
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -61,6 +63,7 @@ class WeatherFragment : Fragment() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     private val viewModel:ViewModelWeather by activityViewModels()
+    private val viewModel2:ViewModelRoom by activityViewModels()
 
     private var latitude:Double? = 0.0
     private var longitude:Double? = 0.0
@@ -74,6 +77,8 @@ class WeatherFragment : Fragment() {
     private lateinit var motion:MotionLayout
     private lateinit var pBar:ProgressBar
 
+    private lateinit var recycler2:RecyclerView
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         tvLocation = binding.tvLocation
         tvCurTemp = binding.tvCurTemp
@@ -81,13 +86,34 @@ class WeatherFragment : Fragment() {
         bottomSheet = binding.botSheet
         motion = binding.mainLayout
         pBar = binding.progressBar2
+        recycler2 = bottomSheet.findViewById(R.id.recyclerBottomSheet)
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
 
         requireActivity().onBackPressedDispatcher.addCallback(requireActivity(),onBackPressedCallback)
         geocoder = Geocoder(requireContext(), Locale.getDefault())
 
+        loadCache()
+
         checkLocation()
+    }
+
+    private fun loadCache(){
+
+        viewModel2.allData.observe(viewLifecycleOwner){
+            val list = arrayListOf<TemperatureModel>()
+
+            it.forEachIndexed { index, tempCache ->
+                val x = TemperatureModel(tempCache.date,tempCache.temp?.toDouble())
+                list.add(x)
+            }
+
+            recycler2.apply {
+                adapter = RecyclerViewAdapter(list)
+            }
+
+        }
+
     }
 
     private fun bottomSheetSettings(response: ResponseWeather){
@@ -103,7 +129,6 @@ class WeatherFragment : Fragment() {
             }
         })
 
-        val recycler2 = bottomSheet.findViewById<RecyclerView>(R.id.recyclerBottomSheet)
 
         val group = response.hourly?.time?.groupBy { it.split("T")[0]}?: mapOf()
         val list = arrayListOf<TemperatureModel>()
@@ -120,6 +145,8 @@ class WeatherFragment : Fragment() {
         recycler2.apply {
             adapter = RecyclerViewAdapter(list)
         }
+
+        viewModel2.insertData(list)
     }
 
     private fun getDate(time:String): String {

@@ -1,7 +1,11 @@
 package com.example.weatherforecast.di
 
+import android.app.Application
+import android.content.Context
 import com.example.weatherforecast.api.APIService
 import com.example.weatherforecast.api.APIService.Companion.BASE_URL
+import com.example.weatherforecast.db.MyDatabase
+import com.example.weatherforecast.db.TempDao
 import com.haroldadmin.cnradapter.NetworkResponseAdapterFactory
 import dagger.Module
 import dagger.Provides
@@ -16,6 +20,18 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
+
+    @Singleton
+    @Provides
+    fun getAppDB(context: Application):MyDatabase{
+        return MyDatabase.getMyDB(context)
+    }
+
+    @Singleton
+    @Provides
+    fun getDao(appDB:MyDatabase):TempDao{
+        return appDB.getDao()
+    }
 
     @Provides
     @Singleton
