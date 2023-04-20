@@ -33,6 +33,7 @@ import com.example.weatherforecast.model.TemperatureModel
 import com.example.weatherforecast.viewmodel.ViewModelRoom
 import com.example.weatherforecast.viewmodel.ViewModelWeather
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LastLocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import dagger.hilt.android.AndroidEntryPoint
@@ -160,7 +161,7 @@ class WeatherFragment : Fragment() {
                 }
             }
 
-            delay(2500)
+            delay(5000)
             checkLocation()
         }
     }
@@ -266,7 +267,6 @@ class WeatherFragment : Fragment() {
                 1
             )
         }
-
 
         //Updated here used fusedLocationClient for better location get
         fusedLocationClient.lastLocation
