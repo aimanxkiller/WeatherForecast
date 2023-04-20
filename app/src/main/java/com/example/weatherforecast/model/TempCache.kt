@@ -9,5 +9,8 @@ data class TempCache(
     @PrimaryKey(autoGenerate = false)val position:Int?,
     @ColumnInfo(name = "date")val date:String?,
     @ColumnInfo(name = "temp")val temp:Int?,
-    @ColumnInfo(name = "update")val update:String?
+    @ColumnInfo(name = "update")val update:String?,
+    @ColumnInfo(name = "location")val location:String?,
+    @ColumnInfo(name = "curTemp")val curTemp: String?,
+    @ColumnInfo(name = "rainProb")val rainProb:String?
     )

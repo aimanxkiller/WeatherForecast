@@ -104,41 +104,13 @@ class WeatherFragment : Fragment() {
 
         requireActivity().onBackPressedDispatcher.addCallback(requireActivity(),onBackPressedCallback)
         geocoder = Geocoder(requireContext(), Locale.getDefault())
+        motionBehavior()
 
         loadCache()
-
     }
 
-    private fun loadCache(){
-
-        lifecycleScope.launch{
-
-            viewModel2.allData.observe(viewLifecycleOwner) {
-                val list = arrayListOf<TemperatureModel>()
-
-                tvUpdate.text = it[0].update
-                tvUpdate.visibility = View.VISIBLE
-
-                tvLocation.text = "TempCache"
-                it.forEachIndexed { index, tempCache ->
-                    val x = TemperatureModel(tempCache.date, tempCache.temp?.toDouble())
-                    list.add(x)
-                }
-
-                recycler2.apply {
-                    adapter = RecyclerViewAdapter(list)
-                }
-            }
-
-            delay(2500)
-            checkLocation()
-        }
-
-    }
-
-    private fun bottomSheetSettings(response: ResponseWeather){
+    private fun motionBehavior(){
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet.findViewById(R.id.bottom_sheet))
-
         bottomSheetBehavior.addBottomSheetCallback(object :BottomSheetBehavior.BottomSheetCallback(){
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 //do nothing
@@ -149,7 +121,55 @@ class WeatherFragment : Fragment() {
             }
         })
 
+        viewModel.loading.observe(viewLifecycleOwner){
+            when(it){
+                true ->{
+                    motion.visibility = View.INVISIBLE
+                    pBar.visibility = View.VISIBLE
+                }
+                false ->{
+                    motion.visibility = View.VISIBLE
+                    pBar.visibility = View.GONE
+                }
+            }
+        }
+    }
 
+    private fun loadCache(){
+
+        lifecycleScope.launch{
+
+            viewModel2.allData.observe(viewLifecycleOwner) {
+                val list = arrayListOf<TemperatureModel>()
+
+
+                it.forEachIndexed { index, tempCache ->
+                    val x = TemperatureModel(tempCache.date, tempCache.temp?.toDouble())
+                    list.add(x)
+                    tvUpdate.text = "Last update :${it[0].update}"
+                    tvLocation.text = it[0].location
+                    tvRain.text = it[0].rainProb
+                    tvCurTemp.text = it[0].curTemp
+
+                    tvUpdate.visibility = View.VISIBLE
+
+                }
+
+                recycler2.apply {
+                    adapter = RecyclerViewAdapter(list)
+                }
+            }
+
+            delay(2500)
+            checkLocation()
+        }
+    }
+
+    private fun bottomSheetSettings(
+        response: ResponseWeather,
+        curTemp: String,
+        rainProb: String
+    ){
         val group = response.hourly?.time?.groupBy { it.split("T")[0]}?: mapOf()
         val list = arrayListOf<TemperatureModel>()
         var start=0
@@ -170,7 +190,9 @@ class WeatherFragment : Fragment() {
         val formattedDate = dateFormat.format(date)
 
         tvUpdate.text = formattedDate
-        viewModel2.insertData(list,formattedDate)
+
+        viewModel2.insertData(list,formattedDate,tvLocation.text.toString(),curTemp,rainProb)
+
     }
 
     private fun getDate(time:String): String {
@@ -199,26 +221,13 @@ class WeatherFragment : Fragment() {
         viewModel.responseBody.observe(viewLifecycleOwner){
             tvCurTemp.text = "${it.currentWeather?.temperature?.roundToInt()}\u00B0"
             tvRain.text = "Chance of Rain : ${viewModel.getCurAvg()}%"
-            bottomSheetSettings(it)
+            bottomSheetSettings(it,tvCurTemp.text.toString(),tvRain.text.toString())
         }
 
         viewModel.error.observe(viewLifecycleOwner){
             Toast.makeText(requireContext(),it,Toast.LENGTH_SHORT).show()
         }
 
-        viewModel.loading.observe(viewLifecycleOwner){
-            when(it){
-                true ->{
-                    tvRain.text = " "
-                    tvCurTemp.text = " "
-
-                    pBar.visibility = View.VISIBLE
-                }
-                false ->{
-                    pBar.visibility = View.GONE
-                }
-            }
-        }
     }
 
     @SuppressLint("SetTextI18n")
@@ -284,6 +293,7 @@ class WeatherFragment : Fragment() {
     private val onBackPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
             // Handle the back button event
+            requireActivity().finish()
         }
     }
 
