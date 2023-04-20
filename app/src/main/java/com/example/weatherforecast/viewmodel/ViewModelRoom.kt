@@ -29,12 +29,13 @@ class ViewModelRoom @Inject constructor(
         allData.postValue(repo.getData())
     }
 
-    fun insertData(list:List<TemperatureModel>){
+    fun insertData(list: List<TemperatureModel>, date: String){
         list.forEachIndexed { index, temperatureModel ->
             val x = TempCache(
                 index,
                 temperatureModel.time,
-                temperatureModel.temperature2m?.roundToInt()
+                temperatureModel.temperature2m?.roundToInt(),
+                date
             )
             repo.insertData(x)
         }

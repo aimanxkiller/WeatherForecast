@@ -8,5 +8,6 @@ import androidx.room.PrimaryKey
 data class TempCache(
     @PrimaryKey(autoGenerate = false)val position:Int?,
     @ColumnInfo(name = "date")val date:String?,
-    @ColumnInfo(name = "temp")val temp:Int?
-)
+    @ColumnInfo(name = "temp")val temp:Int?,
+    @ColumnInfo(name = "update")val update:String?
+    )

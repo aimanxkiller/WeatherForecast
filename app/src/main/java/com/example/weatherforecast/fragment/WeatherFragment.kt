@@ -11,7 +11,6 @@ import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,7 +21,6 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -32,7 +30,6 @@ import com.example.weatherforecast.adapter.RecyclerViewAdapter
 import com.example.weatherforecast.databinding.FragmentWeatherBinding
 import com.example.weatherforecast.model.ResponseWeather
 import com.example.weatherforecast.model.TemperatureModel
-import com.example.weatherforecast.ui.MainActivity
 import com.example.weatherforecast.viewmodel.ViewModelRoom
 import com.example.weatherforecast.viewmodel.ViewModelWeather
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -82,6 +79,7 @@ class WeatherFragment : Fragment() {
     private lateinit var tvLocation:TextView
     private lateinit var tvCurTemp:TextView
     private lateinit var tvRain:TextView
+    private lateinit var tvUpdate:TextView
     private lateinit var bottomSheetBehavior:BottomSheetBehavior<*>
     private lateinit var bottomSheet:View
     private lateinit var geocoder:Geocoder
@@ -94,9 +92,11 @@ class WeatherFragment : Fragment() {
         tvLocation = binding.tvLocation
         tvCurTemp = binding.tvCurTemp
         tvRain = binding.tvRainProb
+        tvUpdate = binding.tvUpdate
         bottomSheet = binding.botSheet
         motion = binding.mainLayout
         pBar = binding.progressBar2
+
         recycler2 = bottomSheet.findViewById(R.id.recyclerBottomSheet)
 
         locationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
@@ -115,7 +115,11 @@ class WeatherFragment : Fragment() {
 
             viewModel2.allData.observe(viewLifecycleOwner) {
                 val list = arrayListOf<TemperatureModel>()
-                tvLocation.text = "TEMP"
+
+                tvUpdate.text = it[0].update
+                tvUpdate.visibility = View.VISIBLE
+
+                tvLocation.text = "TempCache"
                 it.forEachIndexed { index, tempCache ->
                     val x = TemperatureModel(tempCache.date, tempCache.temp?.toDouble())
                     list.add(x)
@@ -161,8 +165,12 @@ class WeatherFragment : Fragment() {
         recycler2.apply {
             adapter = RecyclerViewAdapter(list)
         }
+        val date = Calendar.getInstance().time
+        val dateFormat = SimpleDateFormat("dd-MM-yyyy - HH:mm", Locale.getDefault())
+        val formattedDate = dateFormat.format(date)
 
-        viewModel2.insertData(list)
+        tvUpdate.text = formattedDate
+        viewModel2.insertData(list,formattedDate)
     }
 
     private fun getDate(time:String): String {
