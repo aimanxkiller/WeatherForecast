@@ -39,6 +39,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.roundToInt
@@ -276,11 +277,15 @@ class WeatherFragment : Fragment() {
                     latitude = location.latitude
                     longitude = location.longitude
 
-                    val addresses = geocoder.getFromLocation(latitude as Double, longitude as Double, 1)
-                    val address = addresses?.firstOrNull()
+                    try {
+                        val addresses = geocoder.getFromLocation(latitude as Double, longitude as Double, 1)
+                        val address = addresses?.firstOrNull()
 
-                    // Do something with latitude and longitude
-                    tvLocation.text = "${address?.locality}"
+                        // Do something with latitude and longitude
+                        tvLocation.text = "${address?.locality}"
+                    }catch (e:IOException){
+                        Toast.makeText(requireContext(),"No Location",Toast.LENGTH_SHORT).show()
+                    }
                     getWeatherForecast(latitude, longitude)
                 }
             }
